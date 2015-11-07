@@ -25,4 +25,4 @@ aws autoscaling create-auto-scaling-group --auto-scaling-group-name itmo-544-aut
 aws rds-create-db-instance ITMO-544-DB --engine MySQL 
 
 #read replica creation
-aws rds-create-db-instance-read-replica ITM)-544-DB-replica --source-db-instance-identifier-value ITMO-544-DB
+aws rds-create-db-instance-read-replica ITMO-544-DB-replica --source-db-instance-identifier-value ITMO-544-DB
