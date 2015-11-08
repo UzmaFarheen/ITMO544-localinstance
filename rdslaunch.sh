@@ -10,11 +10,11 @@ LENGTH=${#dbInstanceARR[@]}
 
  for (( i=0; i<${LENGTH}; i++));
  do
-if [ ${dbInstanceARR[i]} == "ITMO544-MP1-DB" ] 
+if [ ${dbInstanceARR[i]} == "mp1" ] 
 then 
 echo "db exists"
 else
-aws rds create-db-instance --db-instance-identifier ITMO544-MP1-DB --db-instance-class db.t1.micro --engine MySQL --master-username osboxes.org --master-user-password osboxes.org --allocated-storage 5
+aws rds create-db-instance --db-instance-identifier mp1 --db-instance-class db.t1.micro --engine MySQL --master-username UzmaFarheen --master-userpassword UzmaFarheen --allocated-storage 5
  fi  
 done
 fi
