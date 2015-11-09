@@ -21,7 +21,7 @@ aws cloudwatch put-metric-alarm --alarm-name cloudwatch --alarm-description "Ala
 create-launch-configuration --launch-configuration-name itmo544-launch-config --instance-id $1 $2 $3
 
 #Autoscaling group creation
-aws autoscaling create-auto-scaling-group --auto-scaling-group-name itmo-544-autoscaling --launch-configuration-name itmo544-launch-config --load-balancer-names ITMO-544-MP-loadbalancer  --health-check-type ELB --min-size 3 --max-size 6 --desired-capacity 3 --default-cooldown 600 --health-check-grace-period 120 --vpc-zone-identifier 
+aws autoscaling create-auto-scaling-group --auto-scaling-group-name itmo-544-autoscaling --launch-configuration-name itmo544-launch-config --load-balancer-names ITMO-544-MP-loadbalancer  --health-check-type ELB --min-size 3 --max-size 6 --desired-capacity 3 --default-cooldown 600 --health-check-grace-period 120 --vpc-zone-identifier us-east-1b 
 
 #AWS RDS instances creation
 aws rds-create-db-instance ITMO544-MP1-DB --engine MySQL 
