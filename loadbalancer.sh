@@ -17,16 +17,25 @@ aws elb configure-health-check --load-balancer-name ITMO-544-MP-loadbalancer --h
 #cookie-stickiness policy configuration
 aws elb create-lb-cookie-stickiness-policy --load-balancer-name ITMO-544-MP-loadbalancer --policy-name ITMO-544-cookiepolicy --cookie-expiration-period 60
 
-#cloud watch metrics creation
-aws cloudwatch put-metric-alarm --alarm-name cloudwatch --alarm-description "Alarm when CPU exceeds 30 percent" --metric-name CPUUtilizing
---namespace AWS/EC2 --statistic Average --period 300 --threshold 30 --comparison-operator GreaterThanThreshold  --dimensions 
- Name=InstanceId,Value=i-12345678 --evaluation-periods 2 --alarm-actions arn:aws:sns:us-east-1:111122223333:MyTopic --unit Percent
-
 #launch configuration creattion
 aws autoscaling create-launch-configuration --launch-configuration-name itmo544-launch-config --image-id $1 --count $2 --instance-type $3 --security-groups $4  --key-name $6  --user-data install-webserver.sh --iam-instance-profile $7
 
 #Autoscaling group creation
 aws autoscaling create-auto-scaling-group --auto-scaling-group-name itmo-544-autoscaling --launch-configuration-name itmo544-launch-config --load-balancer-names ITMO-544-MP-loadbalancer  --health-check-type ELB --min-size 3 --max-size 6 --desired-capacity 3 --default-cooldown 600 --health-check-grace-period 120 --vpc-zone-identifier $5 
+
+#AutoScaling Policy-Increase
+
+SCALINGINCREASE=(`aws autoscaling put-scaling-policy --auto-scaling-group-name itmo-544-autoscaling --policy-name scalingpolicyincrease --scaling-adjustment 3 --adjustment-type ChangeInCapacity`)
+
+#AutoScaling Policy-Decrease
+
+SCALINGDECREASE=(`aws autoscaling put-scaling-policy --auto-scaling-group-name itmo-544-autoscaling --policy-name scalingpolicydecrease --scaling-adjustment -3 --adjustment-type ChangeInCapacity`)
+
+#Cloud Watch Metric
+
+aws cloudwatch put-metric-alarm --alarm-name Add --alarm-description "Alarm when CPU exceeds 30 percent" --metric-name CPUUtilization --namespace AWS/EC2 --statistic Average --period 60 --threshold 30 --comparison-operator GreaterThanOrEqualToThreshold --evaluation-periods 1 --unit Percent --dimensions "Name=AutoScalingGroupName,Value=itmo-544-autoscaling" --alarm-actions $SCALINGINCREASE
+
+aws cloudwatch put-metric-alarm --alarm-name Reduce --alarm-description "Alarm when CPU falls below 10 percent" --metric-name CPUUtilization --namespace AWS/EC2 --statistic Average --period 60 --threshold 10 --comparison-operator LessThanOrEqualToThreshold --evaluation-periods 1 --unit Percent --dimensions "Name=AutoScalingGroupName,Value=itmo-544-autoscaling" --alarm-actions $SCALINGDECREASE
 
 #database subnet creation-
 
@@ -37,3 +46,4 @@ aws rds-create-db-instance ITMO544-MP1-DB --engine MySQL --db-name Project --db-
 
 #read replica creation
 aws rds-create-db-instance-read-replica ITMO544-MP1-DB-replica --source-db-instance-identifier-value ITMO544-MP1-DB
+
