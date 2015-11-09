@@ -34,17 +34,17 @@ DECREASE=(`aws autoscaling put-scaling-policy --auto-scaling-group-name itmo-544
 
 #Cloud Watch Metric 
 
-aws cloudwatch put-metric-alarm --alarm-name Add --alarm-description "CPU exceeds 30 percent" --metric-name CPUUtilization --namespace AWS/EC2 --statistic Average --period 60 --threshold 30 --comparison-operator GreaterThanOrEqualToThreshold --evaluation-periods 1 --unit Percent --dimensions "Name=itmo-544-autoscaling" --alarm-actions $SCALINGINCREASE
+aws cloudwatch put-metric-alarm --alarm-name Add --alarm-description "CPU exceeds 30 percent" --metric-name CPUUtilization --namespace AWS/EC2 --statistic Average --period 60 --threshold 30 --comparison-operator GreaterThanOrEqualToThreshold --evaluation-periods 1 --unit Percent --dimensions "Name=itmo-544-autoscaling" --alarm-actions $INCREASE
 
-aws cloudwatch put-metric-alarm --alarm-name Reduce --alarm-description "CPU falls below 10 percent" --metric-name CPUUtilization --namespace AWS/EC2 --statistic Average --period 60 --threshold 10 --comparison-operator LessThanOrEqualToThreshold --evaluation-periods 1 --unit Percent --dimensions "Name=itmo-544-autoscaling" --alarm-actions $SCALINGDECREASE
+aws cloudwatch put-metric-alarm --alarm-name Reduce --alarm-description "CPU falls below 10 percent" --metric-name CPUUtilization --namespace AWS/EC2 --statistic Average --period 60 --threshold 10 --comparison-operator LessThanOrEqualToThreshold --evaluation-periods 1 --unit Percent --dimensions "Name=itmo-544-autoscaling" --alarm-actions $DECREASE
 
 #database subnet creation-
 
-aws rds create-db-subnet-group --db-subnet-group-name ITMO544DBSubnet --subnet-ids subnet-b2b1e999 subnet-42351f1b --db-subnet-group-description createdbSubnet
+aws rds create-db-subnet-group --db-subnet-group-name ITMO544DBSubnet --subnet-ids subnet-b2b1e999 subnet-42351f1b 
 
 #AWS RDS instances creation
-aws rds-create-db-instance ITMO544-MP1-DB --engine MySQL --db-name Project --db-instance-class db.t1.micro --engine MySQL --allocated-storage 5 --master-username UzmaFarheen --master-user-password UzmaFarheen --db-subnet-group-name ITMO544DBSubnet
+aws rds-create-db-instance mp1 --engine MySQL --db-name Project --db-instance-class db.t1.micro --engine MySQL --allocated-storage 5 --master-username UzmaFarheen --master-user-password UzmaFarheen --db-subnet-group-name ITMO544DBSubnet
 
 #read replica creation
-aws rds-create-db-instance-read-replica ITMO544-MP1-DB-replica --source-db-instance-identifier-value ITMO544-MP1-DB
+aws rds-create-db-instance-read-replica mp1-replica --source-db-instance-identifier-value mp1
 
