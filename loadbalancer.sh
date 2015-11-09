@@ -1,15 +1,17 @@
 !/bin/bash
 
-mapfile -t instanceARR < <(aws ec2 run-instances --image-id $1 --count $2 --instance-type $3 --security-group-id $4 --subnet-id $5 --key-name $6 --associate-public-ip-address --iam-instance-profile Name=$7 --user-data install-webserver.sh) 
+declare -a ARR
+
+mapfile -t ARR < <(aws ec2 run-instances --image-id $1 --count $2 --instance-type $3 --security-group-id $4 --subnet-id $5 --key-name $6 --iam-instance-profile $7 --associate-public-ip-address --user-data install-webserver.sh) 
 
 #ec2 wait command-
-aws ec2 wait instance-running --instance-ids ${instanceARR[@]}
+aws ec2 wait instance-running --instance-ids ${ARR[@]}
 
 #load balancer creation
 aws elb create-load-balancer --load-balancer-name ITMO-544-MP-loadbalancer --listeners "Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80" --security-group-id $4 --subnet-id $5 
 
 #load balancer registration
-aws elb register-instances-with-load-balancer --load-balancer-name ITMO-544-MP-loadbalancer --instance-ids ${instanceARR[@]} 
+aws elb register-instances-with-load-balancer --load-balancer-name ITMO-544-MP-loadbalancer --instance-ids ${ARR[@]} 
 
 #health check policy configuration
 aws elb configure-health-check --load-balancer-name ITMO-544-MP-loadbalancer --health-check Target=HTTP:80/png,Interval=30,UnhealthyThreshold=2,HealthyThreshold=2,Timeout=3
@@ -25,17 +27,17 @@ aws autoscaling create-auto-scaling-group --auto-scaling-group-name itmo-544-aut
 
 #AutoScaling Policy-Increase
 
-SCALINGINCREASE=(`aws autoscaling put-scaling-policy --auto-scaling-group-name itmo-544-autoscaling --policy-name scalingpolicyincrease --scaling-adjustment 3 --adjustment-type ChangeInCapacity`)
+INCREASE=(`aws autoscaling put-scaling-policy --auto-scaling-group-name itmo-544-autoscaling --policy-name scalingpolicyincrease --scaling-adjustment 3 --adjustment-type ChangeInCapacity`)
 
 #AutoScaling Policy-Decrease
 
-SCALINGDECREASE=(`aws autoscaling put-scaling-policy --auto-scaling-group-name itmo-544-autoscaling --policy-name scalingpolicydecrease --scaling-adjustment -3 --adjustment-type ChangeInCapacity`)
+DECREASE=(`aws autoscaling put-scaling-policy --auto-scaling-group-name itmo-544-autoscaling --policy-name scalingpolicydecrease --scaling-adjustment -3 --adjustment-type ChangeInCapacity`)
 
-#Cloud Watch Metric
+#Cloud Watch Metric 
 
-aws cloudwatch put-metric-alarm --alarm-name Add --alarm-description "Alarm when CPU exceeds 30 percent" --metric-name CPUUtilization --namespace AWS/EC2 --statistic Average --period 60 --threshold 30 --comparison-operator GreaterThanOrEqualToThreshold --evaluation-periods 1 --unit Percent --dimensions "Name=AutoScalingGroupName,Value=itmo-544-autoscaling" --alarm-actions $SCALINGINCREASE
+aws cloudwatch put-metric-alarm --alarm-name Add --alarm-description "CPU exceeds 30 percent" --metric-name CPUUtilization --namespace AWS/EC2 --statistic Average --period 60 --threshold 30 --comparison-operator GreaterThanOrEqualToThreshold --evaluation-periods 1 --unit Percent --dimensions "Name=itmo-544-autoscaling" --alarm-actions $SCALINGINCREASE
 
-aws cloudwatch put-metric-alarm --alarm-name Reduce --alarm-description "Alarm when CPU falls below 10 percent" --metric-name CPUUtilization --namespace AWS/EC2 --statistic Average --period 60 --threshold 10 --comparison-operator LessThanOrEqualToThreshold --evaluation-periods 1 --unit Percent --dimensions "Name=AutoScalingGroupName,Value=itmo-544-autoscaling" --alarm-actions $SCALINGDECREASE
+aws cloudwatch put-metric-alarm --alarm-name Reduce --alarm-description "CPU falls below 10 percent" --metric-name CPUUtilization --namespace AWS/EC2 --statistic Average --period 60 --threshold 10 --comparison-operator LessThanOrEqualToThreshold --evaluation-periods 1 --unit Percent --dimensions "Name=itmo-544-autoscaling" --alarm-actions $SCALINGDECREASE
 
 #database subnet creation-
 
