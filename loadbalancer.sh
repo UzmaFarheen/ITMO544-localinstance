@@ -1,5 +1,4 @@
 !/bin/bash
-
 declare -a ARR
 
 mapfile -t ARR < <(aws ec2 run-instances --image-id $1 --count $2 --instance-type $3 --security-group-id $4 --subnet-id $5 --key-name $6 --iam-instance-profile $7 --associate-public-ip-address --user-data install-webserver.sh) 
