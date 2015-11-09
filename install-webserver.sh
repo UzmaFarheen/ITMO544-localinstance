@@ -7,6 +7,6 @@ curl -sS https://getcomposer.org/installer | php
 
 php composer.phar require aws/aws-sdk-php
 
-cp ./ITMO-547/html.html /var/www/html
+mv ./ITMO-547/html.html /var/www/html
  
 echo"Hello, My Name is UZMA FARHEEN" > /tmp/hello.txt
