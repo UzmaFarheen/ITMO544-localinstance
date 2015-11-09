@@ -1,10 +1,10 @@
 !/bin/bash
 
 #load balancer creation
-aws elb create-load-balancer --load-balancer-name ITMO-544-MP-loadbalancer --listeners "Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80" --availability-zones us-east-1a us-east-1b
+aws elb create-load-balancer --load-balancer-name ITMO-544-MP-loadbalancer --listeners "Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80" --availability-zones us-east-1a us-east-1b us-east-1c
 
 #load balancer registration
-aws elb register-instances-with-load-balancer --load-balancer-name ITMO-544-MP-loadbalancer --instances *insert instances here*
+aws elb register-instances-with-load-balancer --load-balancer-name ITMO-544-MP-loadbalancer --instances $1 $2 $3 
 
 #health check policy configuration
 aws elb configure-health-check --load-balancer-name ITMO-544-MP-loadbalancer --health-check Target=HTTP:80/png,Interval=30,UnhealthyThreshold=2,HealthyThreshold=2,Timeout=3
@@ -17,9 +17,11 @@ aws cloudwatch put-metric-alarm --alarm-name cloudwatch --alarm-description "Ala
 --namespace AWS/EC2 --statistic Average --period 300 --threshold 30 --comparison-operator GreaterThanThreshold  --dimensions 
  Name=InstanceId,Value=i-12345678 --evaluation-periods 2 --alarm-actions arn:aws:sns:us-east-1:111122223333:MyTopic --unit Percent
 
+#launch configuration creattion
+create-launch-configuration --launch-configuration-name itmo544-launch-config --instance-id $1 $2 $3
 
 #Autoscaling group creation
-aws autoscaling create-auto-scaling-group --auto-scaling-group-name itmo-544-autoscaling --launch-configuration-name itmo544-launch-config --load-balancer-names ITMO-544-MP-loadbalancer  --health-check-type ELB --min-size 3 --max-size 6 --desired-capacity 3 --default-cooldown 600 --health-check-grace-period 120 --vpc-zone-identifier subnet-cccce295 
+aws autoscaling create-auto-scaling-group --auto-scaling-group-name itmo-544-autoscaling --launch-configuration-name itmo544-launch-config --load-balancer-names ITMO-544-MP-loadbalancer  --health-check-type ELB --min-size 3 --max-size 6 --desired-capacity 3 --default-cooldown 600 --health-check-grace-period 120 --vpc-zone-identifier 
 
 #AWS RDS instances creation
 aws rds-create-db-instance ITMO544-MP1-DB --engine MySQL 
