@@ -42,7 +42,7 @@ aws cloudwatch put-metric-alarm --alarm-name Reduce --alarm-description "Alarm w
 aws rds create-db-subnet-group --db-subnet-group-name ITMO544DBSubnet --subnet-ids subnet-b2b1e999 subnet-42351f1b --db-subnet-group-description createdbSubnet
 
 #AWS RDS instances creation
-aws rds-create-db-instance ITMO544-MP1-DB --engine MySQL --db-name Project --db-instance-class db.t2.micro --engine MySQL --allocated-storage 5 --master-username UzmaFarheen --master-user-password UzmaFarheen --db-subnet-group-name DBUzma
+aws rds-create-db-instance ITMO544-MP1-DB --engine MySQL --db-name Project --db-instance-class db.t1.micro --engine MySQL --allocated-storage 5 --master-username UzmaFarheen --master-user-password UzmaFarheen --db-subnet-group-name ITMO544DBSubnet
 
 #read replica creation
 aws rds-create-db-instance-read-replica ITMO544-MP1-DB-replica --source-db-instance-identifier-value ITMO544-MP1-DB
