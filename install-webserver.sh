@@ -3,6 +3,9 @@
 sudo apt-get -y update
 sudo apt-get install -y apache2 git php5 php5-curl mysql-client curl
 
+git clone https://github.com/UzmaFarheen/ITMO544-localinstance.git
+git clone https://github.com/UzmaFarheen/MP1-PHP.git
+
 curl -sS https://getcomposer.org/installer | sudo php &> /tmp/getcomposer.txt
 
 sudo php composer.phar require aws/aws-sdk-php &> /tmp/runcomposer.txt
