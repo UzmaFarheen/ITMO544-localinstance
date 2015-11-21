@@ -10,6 +10,7 @@ mv ./ITMO-547/html.html /var/www/html
 sudo mv ./MP1-PHP/*.css /var/www/html
 sudo mv ./MP1-PHP/*.js /var/www/html
 sudo mv ./MP1-PHP/*.php /var/www/html
+sudo mv ./ITMO544-localinstance/images/*.jpeg /var/www/html
 
 curl -sS https://getcomposer.org/installer | sudo php &> /tmp/getcomposer.txt
 
