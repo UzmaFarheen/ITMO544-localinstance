@@ -40,7 +40,7 @@ aws cloudwatch put-metric-alarm --alarm-name Reduce --alarm-description "CPU fal
 
 #database subnet creation-
 
-aws rds create-db-subnet-group --db-subnet-group-name ITMO544DBSubnet --subnet-ids subnet-b2b1e999 subnet-42351f1b --db-group-description 544subnet
+aws rds create-db-subnet-group --db-subnet-group-name ITMO544DBSubnet --subnet-ids subnet-b2b1e999 subnet-42351f1b --db-subnet-group-description 544subnet
 
 #AWS RDS instances creation
 aws rds create-db-instance mp1 --engine MySQL --db-name Project --db-instance-class db.t2.micro --engine MySQL --allocated-storage 5 --master-username UzmaFarheen --master-user-password UzmaFarheen --db-subnet-group-name ITMO544DBSubnet
