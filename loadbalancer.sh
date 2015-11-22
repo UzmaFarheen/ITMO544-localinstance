@@ -7,7 +7,7 @@ mapfile -t ARR < <(aws ec2 run-instances --image-id $1 --count $2 --instance-typ
 aws ec2 wait instance-running --instance-ids ${ARR[@]}
 
 #load balancer creation
-aws elb create-load-balancer --load-balancer-name ITMO-544-MP-loadbalancer --listeners "Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80" --security-group-id $4 --subnet-id $5 
+aws elb create-load-balancer --load-balancer-name ITMO-544-MP-loadbalancer --listeners "Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80" --security-groups $4 --subnet $5 
 
 #load balancer registration
 aws elb register-instances-with-load-balancer --load-balancer-name ITMO-544-MP-loadbalancer --instance-ids ${ARR[@]} 
