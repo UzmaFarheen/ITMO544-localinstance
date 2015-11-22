@@ -10,7 +10,7 @@ aws ec2 wait instance-running --instance-ids ${ARR[@]}
 aws elb create-load-balancer --load-balancer-name ITMO-544-MP-loadbalancer --listeners "Protocol=HTTP,LoadBalancerPort=80,InstanceProtocol=HTTP,InstancePort=80" --security-groups $4 --subnet $5 
 
 #load balancer registration
-aws elb register-instances-with-load-balancer --load-balancer-name ITMO-544-MP-loadbalancer --instance-ids ${ARR[@]} 
+aws elb register-instances-with-load-balancer --load-balancer-name ITMO-544-MP-loadbalancer --instances ${ARR[@]} 
 
 #health check policy configuration
 aws elb configure-health-check --load-balancer-name ITMO-544-MP-loadbalancer --health-check Target=HTTP:80/png,Interval=30,UnhealthyThreshold=2,HealthyThreshold=2,Timeout=3
