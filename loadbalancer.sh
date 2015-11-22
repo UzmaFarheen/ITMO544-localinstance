@@ -46,5 +46,5 @@ aws rds create-db-subnet-group --db-subnet-group-name ITMO544DBSubnet --subnet-i
 aws rds create-db-instance --db-instance-identifier mp1 --engine MySQL --db-name Project --db-instance-class db.t2.micro --engine MySQL --allocated-storage 5 --master-username UzmaFarheen --master-user-password UzmaFarheen --db-subnet-group-name ITMO544DBSubnet
 
 #read replica creation
-aws rds-create-db-instance-read-replica --db-instance-identifier mp1-replica --source-db-instance-identifier mp1
+aws rds create-db-instance-read-replica --db-instance-identifier mp1-replica --source-db-instance-identifier mp1
 
